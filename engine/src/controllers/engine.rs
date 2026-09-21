@@ -1,8 +1,8 @@
 use axum::{
+    Json,
     extract::{Path, Query, State},
     http::StatusCode,
     response::IntoResponse,
-    Json,
 };
 use loco_rs::prelude::*;
 use serde::Deserialize;
@@ -182,10 +182,7 @@ pub async fn search(
     format::json(response)
 }
 
-pub async fn navigation(
-    State(ctx): State<AppContext>,
-    Path(id): Path<String>,
-) -> Result<Response> {
+pub async fn navigation(State(ctx): State<AppContext>, Path(id): Path<String>) -> Result<Response> {
     let Some(id) = parse_uuid(&id) else {
         return bad_request_response("invalid unit id");
     };
@@ -227,10 +224,7 @@ pub async fn resolve(
     }
 }
 
-pub async fn get_source(
-    State(ctx): State<AppContext>,
-    Path(id): Path<String>,
-) -> Result<Response> {
+pub async fn get_source(State(ctx): State<AppContext>, Path(id): Path<String>) -> Result<Response> {
     let Some(id) = parse_uuid(&id) else {
         return bad_request_response("invalid source id");
     };
