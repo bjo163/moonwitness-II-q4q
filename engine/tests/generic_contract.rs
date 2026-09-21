@@ -1,5 +1,5 @@
-use q4q_engine::{
-    contracts::{self, Corpus, Document, ErrorResponse, SearchResponse, TextRepresentation, TextUnit},
+use q4q_engine::contracts::{
+    self, Corpus, Document, ErrorResponse, SearchResponse, TextRepresentation, TextUnit,
 };
 use serde_json::json;
 use uuid::Uuid;
@@ -77,7 +77,10 @@ fn contract_serialization_keeps_generic_shape() {
     let value = serde_json::to_value(response).expect("serializable");
     assert_eq!(value["count"], 1);
     assert_eq!(value["has_more"], false);
-    assert_eq!(value["items"][0]["unit"]["reference"], "node-a/section-7:leaf-b");
+    assert_eq!(
+        value["items"][0]["unit"]["reference"],
+        "node-a/section-7:leaf-b"
+    );
     assert_eq!(value["items"][0]["document"]["code"], "doc-01");
     assert_eq!(value["items"][0]["representation"]["verified"], true);
 }
