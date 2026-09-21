@@ -1,0 +1,32 @@
+{
+  "contract": "QURAN_CORE_V1",
+  "status": "CLOSED",
+  "scope": "QURAN",
+  "canonical_source": {
+    "name": "Tanzil Quran Uthmani",
+    "edition_version": "1.1",
+    "ayah_count": 6236,
+    "sha256": "b9027e22eb7e69d326f1eb7467fed8b7bc1eccbe1a894887ed2b3feb4ef5fc90"
+  },
+  "closed_layers": [
+    "canonical_text",
+    "structural_metadata",
+    "observation",
+    "lexical",
+    "morphology",
+    "evidence_crossreference"
+  ],
+  "external_noncanonical_layers": [
+    "qac_syntax_partial",
+    "qac_semantic_ontology_partial",
+    "qurananalysis_qa_ontology"
+  ],
+  "excluded_from_core": [
+    "contextual_evidence",
+    "claims",
+    "interpretation",
+    "activity_evaluation",
+    "q1_q2_q3_q4_scoring"
+  ],
+  "mutation_policy": "locked"
+}
