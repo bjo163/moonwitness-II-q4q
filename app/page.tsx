@@ -156,7 +156,7 @@ export default function Home() {
           <div className="lock-banner">
             <span className="lock-icon">●</span>
             <div>
-              <b>QURAN CORE V1 — CLOSED</b>
+              <b>Q4Q FOUNDATION — CLOSED</b>
               <small>{closedLockCount} locked foundation scopes detected</small>
             </div>
           </div>
@@ -247,7 +247,7 @@ export default function Home() {
             {textUnit?.verified ? <span className="verified">VERIFIED</span> : null}
           </div>
 
-          <div className="surah">
+          <div className="unit-heading">
             <span dir="rtl">{textUnit?.surah_name_arabic ?? "—"}</span>
             <div>
               <b>{textUnit?.surah_name_transliterated ?? "—"}</b>
@@ -280,7 +280,7 @@ export default function Home() {
           {textUnit?.checksum_sha256 ? (
             <div className="checksum">
               <span>CANONICAL SHA256</span>
-              <code>{verse.checksum_sha256}</code>
+              <code>{textUnit.checksum_sha256}</code>
             </div>
           ) : null}
 
@@ -319,7 +319,7 @@ export default function Home() {
               <div className="evidence-head">
                 <div>
                   <div className="eyebrow">EVIDENCE RECORDS</div>
-                  <b>{evidence?.layers.length ?? 0} records anchored to this ayah</b>
+                  <b>{evidence?.layers.length ?? 0} records anchored to this text unit</b>
                 </div>
                 <span className="verified">READ ONLY</span>
               </div>
