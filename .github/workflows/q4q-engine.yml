@@ -41,3 +41,10 @@ jobs:
 
       - name: Clippy
         run: cargo clippy --all-targets -- -D warnings
+
+      - name: Generic core guard
+        run: |
+          if grep -RniE '\b(quran|surah|ayah|juz|hizb|ruku|mushaf)\b' src; then
+            echo "Generic core guard failed: tradition-specific terminology leaked into engine/src."
+            exit 1
+          fi
