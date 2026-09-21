@@ -1,5 +1,5 @@
 use loco_rs::Result;
-use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
+use sea_orm::DatabaseConnection;
 use serde::Serialize;
 use uuid::Uuid;
 
@@ -162,21 +162,9 @@ pub async fn resolve(
         return Ok(None);
     };
 
-    let Some(unit) = text_units::Entity::find()
-        .filter(text_units::Column::Reference.eq(reference))
-        .one(db)
-        .await?
-    else {
+    let Some((corpus, document, unit)) = repo::resolve(db, corpus.id, reference).await? else {
         return Ok(None);
     };
-
-    let Some(document) = repo::get_document(db, unit.document_id).await? else {
-        return Ok(None);
-    };
-
-    if document.corpus_id != corpus.id {
-        return Ok(None);
-    }
 
     Ok(Some(ResolvedUnit {
         corpus,

@@ -9,8 +9,8 @@ default-run = "q4q-engine"
 
 [dependencies]
 async-trait = "0.1"
-chrono = { version = "0.4", features = ["serde"] }
-loco-rs = { version = "1.1", default-features = false, features = ["cli", "with-db"] }
+axum = "0.8"
+loco-rs = { version = "1.1" }
 sea-orm = { version = "2.0", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -20,4 +20,4 @@ uuid = { version = "1.6", features = ["serde", "v4"] }
 migration = { path = "migration" }
 
 [dev-dependencies]
-loco-rs = { version = "1.1", default-features = false, features = ["cli", "with-db", "testing"] }
+loco-rs = { version = "1.1", features = ["testing"] }

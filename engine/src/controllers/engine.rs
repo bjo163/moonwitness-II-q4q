@@ -34,10 +34,13 @@ pub async fn get_corpus(State(ctx): State<AppContext>, Path(id): Path<String>) -
 
 pub async fn list_documents(
     State(ctx): State<AppContext>,
-    Path(corpus_id): Path<String>,
+    Path(corpus): Path<String>,
 ) -> Result<Response> {
-    let corpus_id = parse_uuid(&corpus_id)?;
-    format::json(service::list_documents(&ctx.db, corpus_id).await?)
+    let Some(corpus) = service::get_corpus(&ctx.db, &corpus).await? else {
+        return not_found();
+    };
+
+    format::json(service::list_documents(&ctx.db, corpus.id).await?)
 }
 
 pub async fn get_document(
@@ -143,7 +146,7 @@ pub fn routes() -> Routes {
         .prefix("api/v1")
         .add("/corpora", get(list_corpora))
         .add("/corpora/{id}", get(get_corpus))
-        .add("/corpora/{corpus_id}/documents", get(list_documents))
+        .add("/corpora/{corpus}/documents", get(list_documents))
         .add("/documents/{id}", get(get_document))
         .add("/documents/{document_id}/units", get(list_units))
         .add("/units/{id}", get(get_unit))

@@ -156,3 +156,29 @@ pub async fn next(
         .one(db)
         .await?)
 }
+
+pub async fn resolve(
+    db: &DatabaseConnection,
+    corpus_id: Uuid,
+    reference: &str,
+) -> Result<Option<(corpora::Model, documents::Model, text_units::Model)>> {
+    let Some(unit) = text_units::Entity::find()
+        .inner_join(documents::Entity)
+        .filter(documents::Column::CorpusId.eq(corpus_id))
+        .filter(text_units::Column::Reference.eq(reference))
+        .one(db)
+        .await?
+    else {
+        return Ok(None);
+    };
+
+    let Some(document) = get_document(db, unit.document_id).await? else {
+        return Ok(None);
+    };
+
+    let Some(corpus) = corpora::Entity::find_by_id(corpus_id).one(db).await? else {
+        return Ok(None);
+    };
+
+    Ok(Some((corpus, document, unit)))
+}
