@@ -45,10 +45,7 @@ pub async fn list_documents(
         .await?)
 }
 
-pub async fn get_document(
-    db: &DatabaseConnection,
-    id: Uuid,
-) -> Result<Option<documents::Model>> {
+pub async fn get_document(db: &DatabaseConnection, id: Uuid) -> Result<Option<documents::Model>> {
     Ok(documents::Entity::find_by_id(id).one(db).await?)
 }
 
@@ -64,10 +61,7 @@ pub async fn list_text_units(
         .await?)
 }
 
-pub async fn get_text_unit(
-    db: &DatabaseConnection,
-    id: Uuid,
-) -> Result<Option<text_units::Model>> {
+pub async fn get_text_unit(db: &DatabaseConnection, id: Uuid) -> Result<Option<text_units::Model>> {
     Ok(text_units::Entity::find_by_id(id).one(db).await?)
 }
 
@@ -85,10 +79,7 @@ pub async fn get_representations(
         .await?)
 }
 
-pub async fn get_source(
-    db: &DatabaseConnection,
-    id: Uuid,
-) -> Result<Option<sources::Model>> {
+pub async fn get_source(db: &DatabaseConnection, id: Uuid) -> Result<Option<sources::Model>> {
     Ok(sources::Entity::find_by_id(id).one(db).await?)
 }
 
