@@ -37,6 +37,8 @@ pub struct SearchResponse {
     pub items: Vec<SearchResult>,
     pub limit: u64,
     pub offset: u64,
+    pub count: u64,
+    pub has_more: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -103,20 +105,24 @@ pub async fn search(
     db: &DatabaseConnection,
     params: SearchParams,
 ) -> Result<SearchResponse> {
+    let requested = params.limit;
+    let fetch_limit = requested.saturating_add(1);
+
     let reps = repo::search_representations(
         db,
         params.corpus.as_deref(),
         &params.query,
         params.language.as_deref(),
         params.content_role.as_deref(),
-        params.limit,
+        fetch_limit,
         params.offset,
     )
     .await?;
 
-    let mut items = Vec::with_capacity(reps.len());
+    let has_more = reps.len() > requested as usize;
+    let mut items = Vec::with_capacity(reps.len().min(requested as usize));
 
-    for representation in reps {
+    for representation in reps.into_iter().take(requested as usize) {
         let Some(unit) = repo::get_text_unit(db, representation.text_unit_id).await? else {
             continue;
         };
@@ -132,9 +138,11 @@ pub async fn search(
     }
 
     Ok(SearchResponse {
+        count: items.len() as u64,
         items,
-        limit: params.limit,
+        limit: requested,
         offset: params.offset,
+        has_more,
     })
 }
 
@@ -171,4 +179,15 @@ pub async fn resolve(
         document,
         unit,
     }))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn requested_page_size_never_overflows() {
+        let requested = u64::MAX;
+        assert_eq!(requested.saturating_add(1), u64::MAX);
+    }
 }
