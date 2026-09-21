@@ -109,14 +109,7 @@ pub async fn search(db: &DatabaseConnection, params: SearchParams) -> Result<Sea
     let has_more = reps.len() > requested as usize;
     let mut items = Vec::with_capacity(reps.len().min(requested as usize));
 
-    for representation in reps.into_iter().take(requested as usize) {
-        let Some(unit) = repo::get_text_unit(db, representation.text_unit_id).await? else {
-            continue;
-        };
-        let Some(document) = repo::get_document(db, unit.document_id).await? else {
-            continue;
-        };
-
+    for (representation, unit, document, _corpus) in reps.into_iter().take(requested as usize) {
         items.push(SearchResult {
             representation,
             unit,
