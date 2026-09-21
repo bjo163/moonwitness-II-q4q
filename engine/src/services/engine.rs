@@ -160,8 +160,6 @@ pub async fn resolve(
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test]
     fn requested_page_size_never_overflows() {
         let requested = u64::MAX;
