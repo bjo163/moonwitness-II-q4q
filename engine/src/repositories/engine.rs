@@ -19,7 +19,11 @@ pub async fn get_corpus(
     id_or_code: &str,
 ) -> Result<Option<corpora::Model>> {
     if let Ok(id) = Uuid::parse_str(id_or_code) {
-        return Ok(corpora::Entity::find_by_id(id).one(db).await?);
+        return Ok(corpora::Entity::find()
+            .filter(corpora::Column::Id.eq(id))
+            .filter(corpora::Column::Active.eq(true))
+            .one(db)
+            .await?);
     }
 
     Ok(corpora::Entity::find()
@@ -76,6 +80,7 @@ pub async fn get_representations(
         .filter(text_representations::Column::Verified.eq(true))
         .order_by_desc(text_representations::Column::Canonical)
         .order_by_asc(text_representations::Column::LanguageTag)
+        .order_by_asc(text_representations::Column::Id)
         .all(db)
         .await?)
 }
@@ -101,12 +106,20 @@ pub async fn search_representations(
         .inner_join(documents::Entity)
         .inner_join(corpora::Entity)
         .filter(text_representations::Column::Verified.eq(true))
+        .filter(corpora::Column::Active.eq(true))
         .filter(
             Condition::any()
                 .add(text_representations::Column::Text.contains(query))
                 .add(text_representations::Column::NormalizedText.contains(query)),
         )
+        .order_by_asc(corpora::Column::Code)
+        .order_by_asc(documents::Column::SequenceNo)
+        .order_by_asc(documents::Column::Code)
         .order_by_asc(text_units::Column::SequenceNo)
+        .order_by_asc(text_units::Column::Reference)
+        .order_by_desc(text_representations::Column::Canonical)
+        .order_by_asc(text_representations::Column::LanguageTag)
+        .order_by_asc(text_representations::Column::Id)
         .limit(limit)
         .offset(offset);
 
