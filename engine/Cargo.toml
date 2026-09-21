@@ -1,10 +1,23 @@
 [package]
 name = "q4q-engine"
 version = "0.1.0"
-edition = "2021"
-description = "Deterministic Q4Q evaluation core boundary"
-
-[lib]
-path = "src/lib.rs"
+edition = "2024"
+rust-version = "1.94"
+description = "Q4Q Universal Text Engine built with Loco.rs and SeaORM"
+publish = false
+default-run = "q4q-engine"
 
 [dependencies]
+async-trait = "0.1"
+chrono = { version = "0.4", features = ["serde"] }
+loco-rs = { version = "1.1", default-features = false, features = ["cli", "with-db"] }
+sea-orm = { version = "2.0", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1.45", default-features = false, features = ["macros", "rt-multi-thread"] }
+uuid = { version = "1.6", features = ["serde", "v4"] }
+
+migration = { path = "migration" }
+
+[dev-dependencies]
+loco-rs = { version = "1.1", default-features = false, features = ["cli", "with-db", "testing"] }
