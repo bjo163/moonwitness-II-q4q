@@ -1,13 +1,13 @@
 use async_trait::async_trait;
 use loco_rs::{
+    Result,
     app::{AppContext, Hooks},
     bgworker::Queue,
-    boot::{create_app, BootResult, StartMode},
+    boot::{BootResult, StartMode, create_app},
     config::Config,
     controller::AppRoutes,
     environment::Environment,
     task::Tasks,
-    Result,
 };
 use migration::Migrator;
 use std::path::Path;
@@ -26,7 +26,9 @@ impl Hooks for App {
         format!(
             "{} ({})",
             env!("CARGO_PKG_VERSION"),
-            option_env!("BUILD_SHA").or(option_env!("GITHUB_SHA")).unwrap_or("dev")
+            option_env!("BUILD_SHA")
+                .or(option_env!("GITHUB_SHA"))
+                .unwrap_or("dev")
         )
     }
 
