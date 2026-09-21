@@ -17,6 +17,7 @@ It is intentionally read-only at the Quran Core stage.
 - Canonical SHA256 display
 - Evidence/cross-reference counts
 - Foundation lock visibility
+- Per-ayah evidence inspector (read-only)
 - Responsive layout
 
 ## Data boundary
