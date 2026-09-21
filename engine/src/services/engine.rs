@@ -1,6 +1,5 @@
 use loco_rs::Result;
 use sea_orm::DatabaseConnection;
-use serde::Serialize;
 use uuid::Uuid;
 
 use crate::{
@@ -18,21 +17,21 @@ pub struct SearchParams {
     pub offset: u64,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug)]
 pub struct Navigation {
     pub current: text_units::Model,
     pub previous: Option<text_units::Model>,
     pub next: Option<text_units::Model>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug)]
 pub struct SearchResult {
     pub representation: text_representations::Model,
     pub unit: text_units::Model,
     pub document: documents::Model,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug)]
 pub struct SearchResponse {
     pub items: Vec<SearchResult>,
     pub limit: u64,
@@ -41,7 +40,7 @@ pub struct SearchResponse {
     pub has_more: bool,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug)]
 pub struct ResolvedUnit {
     pub corpus: corpora::Model,
     pub document: documents::Model,
