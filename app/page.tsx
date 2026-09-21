@@ -40,6 +40,20 @@ type Status = {
   } | null;
 };
 
+type Evidence = {
+  live: boolean;
+  reference: string;
+  layers: Array<{
+    evidence_type: string;
+    evidence_key: string;
+    source_version: string | null;
+    source_locator: string | null;
+    method: string | null;
+    verified: boolean;
+    payload: unknown;
+  }>;
+};
+
 const layers = [
   ["01", "Canonical Arabic Text", "CLOSED"],
   ["02", "Structural Metadata", "CLOSED"],
@@ -83,6 +97,8 @@ export default function Home() {
 
       setVerse(versePayload);
       setStatus(statusPayload);
+      setEvidence(null);
+      setEvidenceOpen(false);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Unable to load.");
     } finally {
@@ -269,6 +285,51 @@ export default function Home() {
           {verse?.demo ? (
             <div className="demo-note">
               Demo mode is active. Set the server-only Supabase secret to read the full live corpus.
+            </div>
+          ) : null}
+
+          <div className="evidence-actions">
+            <button
+              type="button"
+              className="evidence-btn"
+              onClick={async () => {
+                setEvidenceOpen(true);
+                setError("");
+                try {
+                  const response = await fetch(
+                    "/api/quran/evidence?reference=" + encodeURIComponent(verse?.reference ?? reference),
+                    { cache: "no-store" }
+                  );
+                  const payload = await response.json();
+                  if (!response.ok) throw new Error(payload.error ?? "Unable to load evidence.");
+                  setEvidence(payload);
+                } catch (cause) {
+                  setError(cause instanceof Error ? cause.message : "Unable to load evidence.");
+                }
+              }}
+            >
+              {evidenceOpen ? "REFRESH EVIDENCE" : "INSPECT EVIDENCE"}
+            </button>
+          </div>
+
+          {evidenceOpen ? (
+            <div className="evidence-panel">
+              <div className="evidence-head">
+                <div>
+                  <div className="eyebrow">EVIDENCE RECORDS</div>
+                  <b>{evidence?.layers.length ?? 0} records anchored to this ayah</b>
+                </div>
+                <span className="verified">READ ONLY</span>
+              </div>
+              {(evidence?.layers ?? []).map((item) => (
+                <div className="evidence-row" key={item.evidence_type + ":" + item.evidence_key}>
+                  <div>
+                    <b>{item.evidence_type}</b>
+                    <small>{item.evidence_key}</small>
+                  </div>
+                  <span>{item.verified ? "VERIFIED" : "UNVERIFIED"}</span>
+                </div>
+              ))}
             </div>
           ) : null}
         </article>
