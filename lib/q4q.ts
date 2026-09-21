@@ -55,7 +55,64 @@ export function validReference(reference: string) {
   return /^(?:[1-9]|[1-9][0-9]|1[01][0-4]):(?:[1-9]|[1-9][0-9]{1,2})$/.test(reference);
 }
 
-export async function getVerse(reference: string) {
+export async function getTextUnitEvidence({
+  corpus,
+  reference
+}: {
+  corpus: string;
+  reference: string;
+}) {
+  if (corpus !== "quran") {
+    throw new Error(`Corpus "${corpus}" is not enabled yet. The API is generic and Quran is the first active corpus.`);
+  }
+
+  const supabase = getServerClient();
+
+  if (!supabase) {
+    return { live: false, corpus, reference, layers: [] };
+  }
+
+  const { data: structure, error: structureError } = await supabase
+    .from("quran_ayah_structure")
+    .select("text_unit_id,reference")
+    .eq("reference", reference)
+    .maybeSingle();
+
+  if (structureError) throw new Error(structureError.message);
+  if (!structure) throw new Error("Text unit not found.");
+
+  const { data, error } = await supabase
+    .from("quran_evidence_records")
+    .select("evidence_type,evidence_key,source_version,source_locator,method,verified,payload")
+    .eq("text_unit_id", structure.text_unit_id)
+    .order("evidence_type")
+    .order("evidence_key");
+
+  if (error) throw new Error(error.message);
+
+  return {
+    live: true,
+    corpus,
+    reference: structure.reference,
+    layers: data ?? []
+  };
+}
+
+export async function getTextUnit({
+  corpus,
+  reference
+}: {
+  corpus: string;
+  reference: string;
+}) {
+  if (corpus !== "quran") {
+    throw new Error(`Corpus "${corpus}" is not enabled yet. The API is generic and Quran is the first active corpus.`);
+  }
+
+  return getQuranTextUnit(reference);
+}
+
+async function getQuranTextUnit(reference: string) {
   const supabase = getServerClient();
 
   if (!supabase) {
