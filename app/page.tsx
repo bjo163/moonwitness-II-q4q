@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 
 type Verse = {
   reference: string;
@@ -26,8 +26,13 @@ type Verse = {
 
 type Status = {
   live: boolean;
-  locks: { scope_code: string; status: string; certification: string | null }[];
+  locks: Array<{
+    scope_code: string;
+    status: string;
+    certification: string | null;
+  }>;
   evidenceRun: {
+    code: string;
     status: string;
     unique_ayahs: number;
     evidence_record_count: number;
@@ -42,29 +47,42 @@ const layers = [
   ["04", "Lexical", "VERIFIED"],
   ["05", "QAC Morphology", "VERIFIED"],
   ["06", "Evidence / Cross-reference", "CLOSED"]
-];
+] as const;
+
+const quickRefs = ["1:1", "2:255", "36:1", "112:1"];
 
 export default function Home() {
   const [reference, setReference] = useState("1:1");
   const [verse, setVerse] = useState<Verse | null>(null);
   const [status, setStatus] = useState<Status | null>(null);
-  const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
 
   async function load(ref: string) {
     setBusy(true);
     setError("");
+
     try {
-      const [verseRes, statusRes] = await Promise.all([
-        fetch("/api/quran?reference=" + encodeURIComponent(ref), { cache: "no-store" }),
+      const [verseResponse, statusResponse] = await Promise.all([
+        fetch("/api/quran?reference=" + encodeURIComponent(ref), {
+          cache: "no-store"
+        }),
         fetch("/api/quran?mode=status", { cache: "no-store" })
       ]);
-      const verseData = await verseRes.json();
-      const statusData = await statusRes.json();
-      if (!verseRes.ok) throw new Error(verseData.error ?? "Unable to load verse.");
-      if (!statusRes.ok) throw new Error(statusData.error ?? "Unable to load status.");
-      setVerse(verseData);
-      setStatus(statusData);
+
+      const versePayload = await verseResponse.json();
+      const statusPayload = await statusResponse.json();
+
+      if (!verseResponse.ok) {
+        throw new Error(versePayload.error ?? "Unable to load Quran reference.");
+      }
+
+      if (!statusResponse.ok) {
+        throw new Error(statusPayload.error ?? "Unable to load foundation status.");
+      }
+
+      setVerse(versePayload);
+      setStatus(statusPayload);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Unable to load.");
     } finally {
@@ -72,76 +90,156 @@ export default function Home() {
     }
   }
 
-  useEffect(() => { void load("1:1"); }, []);
+  function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    void load(reference.trim());
+  }
+
+  useEffect(() => {
+    void load("1:1");
+  }, []);
+
+  const closedLockCount = useMemo(
+    () => status?.locks.filter((lock) => lock.status === "LOCKED").length ?? 0,
+    [status]
+  );
 
   return (
     <main className="shell">
       <header className="topbar">
-        <div className="brand">
+        <a className="brand" href="/">
           <span className="brand-mark">Q4Q</span>
-          <div>
+          <span className="brand-copy">
             <strong>QURAN CORE</strong>
-            <span>MOONWITNESS II</span>
-          </div>
-        </div>
-        <div className={"connection " + (status?.live ? "live" : "demo")}>
+            <small>MOONWITNESS II</small>
+          </span>
+        </a>
+
+        <div className={`connection ${status?.live ? "live" : "demo"}`}>
           <span className="dot" />
-          {status?.live ? "SUPABASE LIVE" : "DEMO / CONFIG REQUIRED"}
+          {status?.live ? "SUPABASE LIVE" : "DEMO FALLBACK"}
         </div>
       </header>
 
       <section className="hero">
-        <div className="eyebrow">QURAN_CORE_V1</div>
-        <h1>Canonical foundation.<br />Evidence first.</h1>
+        <div className="eyebrow">QURAN_CORE_V1 / CLOSED</div>
+        <h1>
+          Read the source.
+          <br />
+          Follow the evidence.
+        </h1>
         <p>
-          Read-only explorer for the closed Quran Core. Canonical text stays
-          separate from observation, morphology, external ontology, claims, and
-          interpretation.
+          A read-only explorer for the closed Quran Core. Canonical text is
+          kept separate from observations, morphology, external ontologies,
+          claims, and interpretation.
         </p>
-        <div className="lock-banner">
-          <span>●</span>
-          <b>QURAN CORE V1 — CLOSED</b>
-          <small>Mutation boundary preserved in Supabase.</small>
+
+        <div className="hero-actions">
+          <div className="lock-banner">
+            <span className="lock-icon">●</span>
+            <div>
+              <b>QURAN CORE V1 — CLOSED</b>
+              <small>{closedLockCount} locked foundation scopes detected</small>
+            </div>
+          </div>
+
+          <a className="ghost-link" href="#explorer">
+            Open explorer ↓
+          </a>
         </div>
       </section>
 
-      <section className="panel">
+      <section className="metrics" aria-label="Foundation metrics">
+        <div className="metric">
+          <span>AYAH SPINES</span>
+          <strong>{status?.evidenceRun?.unique_ayahs?.toLocaleString() ?? "—"}</strong>
+          <small>canonical references</small>
+        </div>
+        <div className="metric">
+          <span>EVIDENCE</span>
+          <strong>{status?.evidenceRun?.evidence_record_count?.toLocaleString() ?? "—"}</strong>
+          <small>verified records</small>
+        </div>
+        <div className="metric">
+          <span>CROSSREFS</span>
+          <strong>{status?.evidenceRun?.crossref_count?.toLocaleString() ?? "—"}</strong>
+          <small>verified links</small>
+        </div>
+        <div className="metric">
+          <span>CORE STATE</span>
+          <strong>CLOSED</strong>
+          <small>mutation boundary</small>
+        </div>
+      </section>
+
+      <section className="panel explorer" id="explorer">
         <div className="panel-head">
           <div>
             <div className="eyebrow">VERSE LOOKUP</div>
             <h2>Open an ayah</h2>
           </div>
           <div className="quick-links">
-            {["1:1", "2:255", "36:1", "112:1"].map((value) => (
-              <button key={value} className="chip" onClick={() => { setReference(value); void load(value); }}>
-                {value}
+            {quickRefs.map((item) => (
+              <button
+                key={item}
+                className="chip"
+                type="button"
+                onClick={() => {
+                  setReference(item);
+                  void load(item);
+                }}
+              >
+                {item}
               </button>
             ))}
           </div>
         </div>
-        <form className="lookup" onSubmit={(event) => { event.preventDefault(); void load(reference); }}>
-          <input value={reference} onChange={(event) => setReference(event.target.value)} placeholder="2:255" aria-label="Quran reference" />
-          <button type="submit" disabled={busy}>{busy ? "READING…" : "READ"}</button>
+
+        <form className="lookup" onSubmit={submit}>
+          <div className="field">
+            <span>REFERENCE</span>
+            <input
+              value={reference}
+              onChange={(event) => setReference(event.target.value)}
+              placeholder="2:255"
+              inputMode="numeric"
+              aria-label="Quran reference"
+              autoComplete="off"
+            />
+          </div>
+          <button className="read-btn" type="submit" disabled={busy}>
+            {busy ? "READING…" : "READ AYAH"}
+          </button>
         </form>
-        {error && <div className="error">{error}</div>}
+
+        {error && (
+          <div className="error" role="alert">
+            {error}
+          </div>
+        )}
       </section>
 
       <section className="grid">
         <article className="panel verse-card">
           <div className="panel-head">
             <div>
-              <div className="eyebrow">CANONICAL TEXT</div>
+              <div className="eyebrow">CANONICAL REPRESENTATION</div>
               <h2>{verse?.reference ?? "—"}</h2>
             </div>
-            {verse?.verified && <span className="verified">VERIFIED</span>}
+            {verse?.verified ? <span className="verified">VERIFIED</span> : null}
           </div>
 
           <div className="surah">
-            <span>{verse?.surah_name_arabic ?? "—"}</span>
-            <b>{verse?.surah_name_transliterated ?? "—"} · {verse?.surah_name_english ?? "—"}</b>
+            <span dir="rtl">{verse?.surah_name_arabic ?? "—"}</span>
+            <div>
+              <b>{verse?.surah_name_transliterated ?? "—"}</b>
+              <small>{verse?.surah_name_english ?? "—"}</small>
+            </div>
           </div>
 
-          <div className="arabic" dir="rtl">{verse?.text ?? "Loading…"}</div>
+          <div className="arabic" dir="rtl" lang="ar">
+            {verse?.text ?? "Loading canonical text…"}
+          </div>
 
           <div className="metadata">
             {[
@@ -154,42 +252,49 @@ export default function Home() {
               ["PAGE", verse?.mushaf_page],
               ["REVELATION", verse?.revelation_type]
             ].map(([label, value]) => (
-              <div key={label}><span>{label}</span><b>{value ?? "—"}</b></div>
+              <div key={label}>
+                <span>{label}</span>
+                <b>{value ?? "—"}</b>
+              </div>
             ))}
           </div>
 
-          {verse?.checksum_sha256 && (
-            <div className="checksum">SHA256 <code>{verse.checksum_sha256}</code></div>
-          )}
-          {verse?.demo && <div className="demo-note">Demo fallback — add SUPABASE_SECRET_KEY for live Quran data.</div>}
+          {verse?.checksum_sha256 ? (
+            <div className="checksum">
+              <span>CANONICAL SHA256</span>
+              <code>{verse.checksum_sha256}</code>
+            </div>
+          ) : null}
+
+          {verse?.demo ? (
+            <div className="demo-note">
+              Demo mode is active. Set the server-only Supabase secret to read the full live corpus.
+            </div>
+          ) : null}
         </article>
 
-        <aside className="panel">
+        <aside className="panel side-card">
           <div className="eyebrow">FOUNDATION MAP</div>
-          <h2>Closed layers</h2>
+          <h2>Core layers</h2>
 
           <div className="layers">
             {layers.map(([number, name, state]) => (
               <div className="layer" key={number}>
                 <span className="number">{number}</span>
-                <div><b>{name}</b><small>{state}</small></div>
+                <div>
+                  <b>{name}</b>
+                  <small>{state}</small>
+                </div>
                 <span className="state">{state}</span>
               </div>
             ))}
           </div>
 
           <div className="divider" />
-          <div className="eyebrow">EVIDENCE RUN</div>
-          <div className="stats">
-            <div><span>AYAH SPINES</span><strong>{status?.evidenceRun?.unique_ayahs?.toLocaleString() ?? "—"}</strong></div>
-            <div><span>RECORDS</span><strong>{status?.evidenceRun?.evidence_record_count?.toLocaleString() ?? "—"}</strong></div>
-            <div><span>CROSSREFS</span><strong>{status?.evidenceRun?.crossref_count?.toLocaleString() ?? "—"}</strong></div>
-          </div>
 
-          <div className="divider" />
-          <div className="eyebrow">LOCKS</div>
+          <div className="eyebrow">ACTIVE LOCKS</div>
           <div className="locks">
-            {(status?.locks ?? []).slice(0, 6).map((lock) => (
+            {(status?.locks ?? []).map((lock) => (
               <div className="lock-row" key={lock.scope_code}>
                 <span>{lock.scope_code.replace(/^QURAN_/, "")}</span>
                 <b>{lock.status}</b>
@@ -201,7 +306,7 @@ export default function Home() {
 
       <footer>
         <span>Q4Q / Quran Foundation</span>
-        <span>Source of truth: Supabase · Code: GitHub</span>
+        <span>Supabase = data platform · Rust = deterministic engine</span>
       </footer>
     </main>
   );
