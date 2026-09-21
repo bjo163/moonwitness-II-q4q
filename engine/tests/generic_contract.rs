@@ -10,7 +10,8 @@ fn contract_serialization_keeps_generic_shape() {
     let document_id = Uuid::from_u128(2);
     let unit_id = Uuid::from_u128(3);
     let representation_id = Uuid::from_u128(4);
-\n    let document = Document {
+
+    let document = Document {
         id: document_id,
         corpus_id,
         parent_document_id: None,
