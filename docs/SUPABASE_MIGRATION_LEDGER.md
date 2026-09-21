@@ -1,0 +1,30 @@
+# Supabase Migration Ledger
+
+Runtime project: `q4q`
+
+## Applied migrations observed on 2026-09-22
+
+- 20260916090314 q4q_foundation_schema_v1
+- 20260916090344 q4q_seed_foundation_catalog_v1
+- 20260916092707 finalize_universal_resource_model_v1
+- 20260916092732 index_foreign_keys_universal_model
+- 20260916093346 finalize_provenance_and_integrity_v1
+- 20260916093352 normalize_resource_provenance_v1
+- 20260916093412 finalize_provenance_indexes_v1
+- 20260917051824 enable_http_for_quran_ingestion
+- 20260917052332 finalize_quran_multilanguage_edition_metadata
+- 20260917164554 install_worldview_tradition_hierarchy
+- 20260921172912 lock_quran_foundation_certified_baseline
+- 20260921173643 build_quran_structural_metadata_layer
+- 20260921173716 fix_quran_structural_ayah_view_unit_type
+- 20260921173741 fix_quran_structural_global_ayah_mapping_v2
+- 20260921173816 lock_quran_structural_metadata_verified_baseline
+- 20260921174111 add_quran_annotation_layer_governance
+- 20260921174244 add_quran_observation_run_and_constraints
+- 20260921175543 add_quran_lexical_observation_layer_v1_fix2
+- 20260921175654 add_quran_morphology_annotation_v04
+- 20260921175737 add_quran_morphology_word_views
+- 20260921175807 lock_quran_qac_morphology_snapshot_v04
+- 20260921190940 harden_quran_core_security_v1
+
+The repository does not fabricate historical SQL. Only SQL actually committed to this repository is treated as source-controlled migration text.
