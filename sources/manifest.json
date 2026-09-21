@@ -1,0 +1,52 @@
+{
+  "manifest": "Q4Q_QURAN_SOURCES_V1",
+  "status": "VERIFIED",
+  "canonical_boundary": "Tanzil Arabic is canonical; other sources are external representations/evidence.",
+  "sources": [
+    {
+      "name": "Tanzil Quran Text",
+      "role": "canonical_arabic_text",
+      "source_id": "937a8bd5-6e19-4bc8-83bb-a1d28fbf6a62",
+      "uri": "https://tanzil.net/download/",
+      "verified": true,
+      "sha256": "b9027e22eb7e69d326f1eb7467fed8b7bc1eccbe1a894887ed2b3feb4ef5fc90"
+    },
+    {
+      "name": "Qur'an Kemenag",
+      "role": "translation_and_web_corpus",
+      "source_id": "53555dd1-e35a-42ef-9d06-935ab0252561",
+      "uri": "https://quran.kemenag.go.id/",
+      "verified": true,
+      "live_api_parity": "6236/6236",
+      "translation_sha256": "b67295903e3dcffa08d221a811847841729936487ff5a1bf82278cb7eab62436",
+      "archive_uri": "https://lajnah.kemenag.go.id/info-lpmq/unduhan/terjemah-al-quran.html",
+      "archive_filename": "Terjemahan Al-Quran_v161122.rar",
+      "archive_md5": "188c72ea69942730998650536e3b874c",
+      "archive_binary_parity": "PENDING"
+    },
+    {
+      "name": "Quranic Arabic Corpus Morphology v0.4",
+      "role": "external_morphology",
+      "source_id": "28db4c1e-2884-4fe2-9303-5089989188e9",
+      "uri": "https://corpus.quran.com/download/",
+      "verified": true,
+      "sha256": "a1d12923815341face765083805d2148ed2d9f5cc3f7d6665219d887675d8c46"
+    },
+    {
+      "name": "Quranic Arabic Corpus Ontology",
+      "role": "external_semantic_ontology",
+      "source_id": "1d11c963-4afd-44cb-981a-9553b31d317f",
+      "uri": "https://corpus.quran.com/ontology.jsp",
+      "verified": true,
+      "coverage": "PARTIAL"
+    },
+    {
+      "name": "QuranAnalysis QA Ontology v1.0",
+      "role": "external_semantic_relation_graph",
+      "source_id": "4c0fdd9b-6a4f-47ce-9a2b-13540b281d02",
+      "uri": "https://raw.githubusercontent.com/karimouda/qurananalysis/7faf65fdedc85d6bcb3f6d29d46786c2febcd5e4/data/ontology/qa.ontology.v1.owl",
+      "verified": true,
+      "sha256": "a049ae75adfe4a13690263df1dea7c7661c5ac3ccd07af6f4a908008507c2753"
+    }
+  ]
+}
