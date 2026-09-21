@@ -4,6 +4,7 @@
 //! The core is corpus-agnostic by design.
 
 pub mod app;
+pub mod contracts;
 pub mod controllers;
 pub mod models;
 pub mod repositories;
