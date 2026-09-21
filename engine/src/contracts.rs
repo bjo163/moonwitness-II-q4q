@@ -225,8 +225,8 @@ mod tests {
 
     #[test]
     fn route_contract_is_generic_and_stable() {
-        assert!(ROUTES.iter().any(|route| *route == "/search"));
-        assert!(ROUTES.iter().any(|route| *route == "/resolve"));
+        assert!(ROUTES.contains(&"/search"));
+        assert!(ROUTES.contains(&"/resolve"));
         assert!(ROUTES.iter().any(|route| route.contains("/corpora")));
         assert_eq!(API_PREFIX, "api/v1");
     }
