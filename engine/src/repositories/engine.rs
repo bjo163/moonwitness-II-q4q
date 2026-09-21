@@ -91,11 +91,18 @@ pub async fn search_representations(
     content_role: Option<&str>,
     limit: u64,
     offset: u64,
-) -> Result<Vec<text_representations::Model>> {
+) -> Result<
+    Vec<(
+        text_representations::Model,
+        text_units::Model,
+        documents::Model,
+        corpora::Model,
+    )>,
+> {
     let mut selector = text_representations::Entity::find()
-        .inner_join(text_units::Entity)
-        .inner_join(documents::Entity)
-        .inner_join(corpora::Entity)
+        .find_also_related(text_units::Entity)
+        .and_also_related(documents::Entity)
+        .find_also(documents::Entity, corpora::Entity)
         .filter(text_representations::Column::Verified.eq(true))
         .filter(corpora::Column::Active.eq(true))
         .filter(
@@ -126,7 +133,18 @@ pub async fn search_representations(
         selector = selector.filter(text_representations::Column::ContentRole.eq(content_role));
     }
 
-    Ok(selector.all(db).await?)
+    let rows = selector.all(db).await?;
+    Ok(rows
+        .into_iter()
+        .filter_map(|(representation, unit, document, corpus)| {
+            Some((
+                representation,
+                unit?,
+                document?,
+                corpus?,
+            ))
+        })
+        .collect())
 }
 
 pub async fn previous(
