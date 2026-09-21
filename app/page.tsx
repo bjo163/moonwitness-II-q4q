@@ -69,6 +69,8 @@ export default function Home() {
   const [reference, setReference] = useState("1:1");
   const [verse, setVerse] = useState<Verse | null>(null);
   const [status, setStatus] = useState<Status | null>(null);
+  const [evidence, setEvidence] = useState<Evidence | null>(null);
+  const [evidenceOpen, setEvidenceOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
