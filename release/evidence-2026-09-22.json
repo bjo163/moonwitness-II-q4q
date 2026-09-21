@@ -1,0 +1,51 @@
+{
+  "release": "QURAN_CORE_V1",
+  "certification_date": "2026-09-22",
+  "github_head_before_this_file": "93ee48c364463f5b0eddae52e8a707b04a69dca6",
+  "supabase": {
+    "project": "q4q",
+    "project_ref": "tscnfnlbdluhvokyqbhc",
+    "latest_migration": "20260921190940_harden_quran_core_security_v1"
+  },
+  "release_gate": {
+    "overall_pass": true,
+    "ayah_spines": 6236,
+    "complete_ayah_spines": 6236,
+    "incomplete_ayah_spines": 0,
+    "evidence_records": 37851,
+    "verified_evidence_records": 37851,
+    "crossrefs": 24394,
+    "verified_crossrefs": 24394,
+    "broken_record_refs": 0,
+    "broken_crossrefs": 0,
+    "representations": 31180,
+    "verified_nonblank_representations": 31180,
+    "semantic_occurrences": 5686,
+    "qa_ontology_edges": 985
+  },
+  "locks": [
+    "QURAN_FOUNDATION=LOCKED",
+    "QURAN_STRUCTURAL_METADATA=LOCKED",
+    "QURAN_SEMANTIC_OCCURRENCE_MAPPING=LOCKED",
+    "QURAN_QA_SEMANTIC_RELATION_GRAPH=LOCKED",
+    "QURAN_EVIDENCE_CROSSREFERENCE_V1=LOCKED"
+  ],
+  "security_advisor": {
+    "rls_disabled_in_public_errors": 0,
+    "function_search_path_mutable_warnings": 0,
+    "rls_enabled_no_policy_info": 58
+  },
+  "performance_advisor": {
+    "unindexed_foreign_keys_info": 29,
+    "unused_indexes_info": 43
+  },
+  "ci": {
+    "workflow": "q4q-ci",
+    "configured": true,
+    "workflow_run_observed_by_connector": false,
+    "reason": "No workflow run was returned for the observed commit."
+  },
+  "pending": [
+    "official Kemenag archive binary parity"
+  ]
+}
