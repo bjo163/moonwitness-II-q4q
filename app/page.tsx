@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
-type Verse = {
+type TextUnit = {
   reference: string;
   global_ayah_index: number;
   surah_number: number;
@@ -67,7 +67,7 @@ const quickRefs = ["1:1", "2:255", "36:1", "112:1"];
 
 export default function Home() {
   const [reference, setReference] = useState("1:1");
-  const [verse, setVerse] = useState<Verse | null>(null);
+  const [textUnit, setTextUnit] = useState<TextUnit | null>(null);
   const [status, setStatus] = useState<Status | null>(null);
   const [evidence, setEvidence] = useState<Evidence | null>(null);
   const [evidenceOpen, setEvidenceOpen] = useState(false);
@@ -80,24 +80,24 @@ export default function Home() {
 
     try {
       const [verseResponse, statusResponse] = await Promise.all([
-        fetch("/api/quran?reference=" + encodeURIComponent(ref), {
+        fetch("/api/scripture?corpus=quran&reference=" + encodeURIComponent(ref), {
           cache: "no-store"
         }),
-        fetch("/api/quran?mode=status", { cache: "no-store" })
+        fetch("/api/scripture?corpus=quran&mode=status", { cache: "no-store" })
       ]);
 
       const versePayload = await verseResponse.json();
       const statusPayload = await statusResponse.json();
 
       if (!verseResponse.ok) {
-        throw new Error(versePayload.error ?? "Unable to load Quran reference.");
+        throw new Error(versePayload.error ?? "Unable to load Scripture reference.");
       }
 
       if (!statusResponse.ok) {
         throw new Error(statusPayload.error ?? "Unable to load foundation status.");
       }
 
-      setVerse(versePayload);
+      setTextUnit(versePayload);
       setStatus(statusPayload);
       setEvidence(null);
       setEvidenceOpen(false);
@@ -128,7 +128,7 @@ export default function Home() {
         <a className="brand" href="/">
           <span className="brand-mark">Q4Q</span>
           <span className="brand-copy">
-            <strong>QURAN CORE</strong>
+            <strong>SCRIPTURE CORE</strong>
             <small>MOONWITNESS II</small>
           </span>
         </a>
@@ -140,14 +140,14 @@ export default function Home() {
       </header>
 
       <section className="hero">
-        <div className="eyebrow">QURAN_CORE_V1 / CLOSED</div>
+        <div className="eyebrow">Q4Q / SCRIPTURE FOUNDATION</div>
         <h1>
           Read the source.
           <br />
           Follow the evidence.
         </h1>
         <p>
-          A read-only explorer for the closed Quran Core. Canonical text is
+          A read-only explorer for the active corpus. Canonical text is
           kept separate from observations, morphology, external ontologies,
           claims, and interpretation.
         </p>
@@ -193,8 +193,8 @@ export default function Home() {
       <section className="panel explorer" id="explorer">
         <div className="panel-head">
           <div>
-            <div className="eyebrow">VERSE LOOKUP</div>
-            <h2>Open an ayah</h2>
+            <div className="eyebrow">TEXT UNIT LOOKUP</div>
+            <h2>Open a text unit</h2>
           </div>
           <div className="quick-links">
             {quickRefs.map((item) => (
@@ -221,12 +221,12 @@ export default function Home() {
               onChange={(event) => setReference(event.target.value)}
               placeholder="2:255"
               inputMode="numeric"
-              aria-label="Quran reference"
+              aria-label="Scripture reference"
               autoComplete="off"
             />
           </div>
           <button className="read-btn" type="submit" disabled={busy}>
-            {busy ? "READING…" : "READ AYAH"}
+            {busy ? "READING…" : "READ TEXT UNIT"}
           </button>
         </form>
 
@@ -242,33 +242,33 @@ export default function Home() {
           <div className="panel-head">
             <div>
               <div className="eyebrow">CANONICAL REPRESENTATION</div>
-              <h2>{verse?.reference ?? "—"}</h2>
+              <h2>{textUnit?.reference ?? "—"}</h2>
             </div>
-            {verse?.verified ? <span className="verified">VERIFIED</span> : null}
+            {textUnit?.verified ? <span className="verified">VERIFIED</span> : null}
           </div>
 
           <div className="surah">
-            <span dir="rtl">{verse?.surah_name_arabic ?? "—"}</span>
+            <span dir="rtl">{textUnit?.surah_name_arabic ?? "—"}</span>
             <div>
-              <b>{verse?.surah_name_transliterated ?? "—"}</b>
-              <small>{verse?.surah_name_english ?? "—"}</small>
+              <b>{textUnit?.surah_name_transliterated ?? "—"}</b>
+              <small>{textUnit?.surah_name_english ?? "—"}</small>
             </div>
           </div>
 
           <div className="arabic" dir="rtl" lang="ar">
-            {verse?.text ?? "Loading canonical text…"}
+            {textUnit?.text ?? "Loading canonical text…"}
           </div>
 
           <div className="metadata">
             {[
-              ["GLOBAL", verse?.global_ayah_index],
-              ["JUZ", verse?.juz],
-              ["HIZB", verse?.hizb],
-              ["QUARTER", verse?.hizb_quarter],
-              ["MANZIL", verse?.manzil],
-              ["RUKU", verse?.ruku],
-              ["PAGE", verse?.mushaf_page],
-              ["REVELATION", verse?.revelation_type]
+              ["GLOBAL", textUnit?.global_ayah_index],
+              ["JUZ", textUnit?.juz],
+              ["HIZB", textUnit?.hizb],
+              ["QUARTER", textUnit?.hizb_quarter],
+              ["MANZIL", textUnit?.manzil],
+              ["RUKU", textUnit?.ruku],
+              ["PAGE", textUnit?.mushaf_page],
+              ["REVELATION", textUnit?.revelation_type]
             ].map(([label, value]) => (
               <div key={label}>
                 <span>{label}</span>
@@ -277,14 +277,14 @@ export default function Home() {
             ))}
           </div>
 
-          {verse?.checksum_sha256 ? (
+          {textUnit?.checksum_sha256 ? (
             <div className="checksum">
               <span>CANONICAL SHA256</span>
               <code>{verse.checksum_sha256}</code>
             </div>
           ) : null}
 
-          {verse?.demo ? (
+          {textUnit?.demo ? (
             <div className="demo-note">
               Demo mode is active. Set the server-only Supabase secret to read the full live corpus.
             </div>
@@ -299,7 +299,7 @@ export default function Home() {
                 setError("");
                 try {
                   const response = await fetch(
-                    "/api/quran/evidence?reference=" + encodeURIComponent(verse?.reference ?? reference),
+                    "/api/scripture/evidence?corpus=quran&reference=" + encodeURIComponent(textUnit?.reference ?? reference),
                     { cache: "no-store" }
                   );
                   const payload = await response.json();
@@ -368,7 +368,7 @@ export default function Home() {
       </section>
 
       <footer>
-        <span>Q4Q / Quran Foundation</span>
+        <span>Q4Q / Scripture Foundation</span>
         <span>Supabase = data platform · Rust = deterministic engine</span>
       </footer>
     </main>
