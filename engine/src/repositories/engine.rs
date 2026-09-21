@@ -137,12 +137,7 @@ pub async fn search_representations(
     Ok(rows
         .into_iter()
         .filter_map(|(representation, unit, document, corpus)| {
-            Some((
-                representation,
-                unit?,
-                document?,
-                corpus?,
-            ))
+            Some((representation, unit?, document?, corpus?))
         })
         .collect())
 }
