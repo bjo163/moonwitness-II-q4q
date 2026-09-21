@@ -1,0 +1,10 @@
+[package]
+name = "q4q-engine"
+version = "0.1.0"
+edition = "2021"
+description = "Deterministic Q4Q evaluation core boundary"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
