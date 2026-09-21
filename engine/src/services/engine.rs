@@ -66,10 +66,7 @@ pub async fn list_documents(
     repo::list_documents(db, corpus_id).await
 }
 
-pub async fn get_document(
-    db: &DatabaseConnection,
-    id: Uuid,
-) -> Result<Option<documents::Model>> {
+pub async fn get_document(db: &DatabaseConnection, id: Uuid) -> Result<Option<documents::Model>> {
     repo::get_document(db, id).await
 }
 
@@ -80,10 +77,7 @@ pub async fn list_text_units(
     repo::list_text_units(db, document_id).await
 }
 
-pub async fn get_text_unit(
-    db: &DatabaseConnection,
-    id: Uuid,
-) -> Result<Option<text_units::Model>> {
+pub async fn get_text_unit(db: &DatabaseConnection, id: Uuid) -> Result<Option<text_units::Model>> {
     repo::get_text_unit(db, id).await
 }
 
@@ -94,17 +88,11 @@ pub async fn get_representations(
     repo::get_representations(db, text_unit_id).await
 }
 
-pub async fn get_source(
-    db: &DatabaseConnection,
-    id: Uuid,
-) -> Result<Option<sources::Model>> {
+pub async fn get_source(db: &DatabaseConnection, id: Uuid) -> Result<Option<sources::Model>> {
     repo::get_source(db, id).await
 }
 
-pub async fn search(
-    db: &DatabaseConnection,
-    params: SearchParams,
-) -> Result<SearchResponse> {
+pub async fn search(db: &DatabaseConnection, params: SearchParams) -> Result<SearchResponse> {
     let requested = params.limit;
     let fetch_limit = requested.saturating_add(1);
 
@@ -146,10 +134,7 @@ pub async fn search(
     })
 }
 
-pub async fn navigation(
-    db: &DatabaseConnection,
-    id: Uuid,
-) -> Result<Option<Navigation>> {
+pub async fn navigation(db: &DatabaseConnection, id: Uuid) -> Result<Option<Navigation>> {
     let Some(current) = repo::get_text_unit(db, id).await? else {
         return Ok(None);
     };
