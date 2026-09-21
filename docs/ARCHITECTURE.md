@@ -43,6 +43,23 @@ Q4Q does **not** introduce Neon as a second database at this stage.
 
 Next.js is the first application surface.
 
+The application and API boundaries are **scripture-generic**. They must not be named after a single tradition or corpus.
+
+Canonical web/API shape:
+
+```
+/api/scripture
+/api/scripture/evidence
+```
+
+A corpus is selected explicitly, for example:
+
+```
+/api/scripture?corpus=quran&reference=2:255
+```
+
+Quran is the first active corpus implementation. Other corpora can be added behind the same generic interface without changing the public API shape.
+
 Initial goal:
 - fast visual test
 - Quran Core explorer
@@ -103,15 +120,15 @@ Interpretation and claims must never silently become canonical Quran data.
 ## 3. Current Data Flow
 
 ```
-Quran Source
+Scripture Source / Corpus
     ↓
 Supabase Q4Q
     ↓
-Verified Quran Core
+Verified Corpus Foundation
     ↓
 Evidence / Cross-reference
     ↓
-Next.js Web Explorer
+Next.js Scripture Explorer
 ```
 
 The future evaluation path is:
@@ -212,4 +229,4 @@ Do not add yet:
 - autonomous evaluation
 - LLM-controlled canonical data mutation
 
-The immediate objective is a stable, testable Quran foundation and a clean platform boundary.
+The immediate objective is a stable, testable scripture platform boundary, with Quran as the first closed corpus.
