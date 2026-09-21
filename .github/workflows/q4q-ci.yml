@@ -1,0 +1,44 @@
+name: q4q-ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Validate contracts
+        run: |
+          python -m json.tool contracts/quran-core-v1.json >/dev/null
+          python -m json.tool sources/manifest.json >/dev/null
+
+      - name: Verify repository surfaces
+        run: |
+          test -f README.md
+          test -f docs/ARCHITECTURE.md
+          test -f contracts/quran-core-v1.json
+          test -f sources/manifest.json
+          test -f verification/quran-core-release-gate.sql
+          test -f verification/security.sql
+          test -f verification/schema-introspection.sql
+          test -f types/supabase.ts
