@@ -1,0 +1,59 @@
+{
+  "release": "QURAN_CORE_V1",
+  "version": "1.0.0",
+  "status": "CLOSED",
+  "certification_date": "2026-09-22",
+  "runtime": {
+    "platform": "Supabase",
+    "project": "q4q",
+    "project_ref": "tscnfnlbdluhvokyqbhc",
+    "region": "ap-southeast-1"
+  },
+  "closure": {
+    "boundary": "EVIDENCE_CROSSREFERENCE_SPINE",
+    "ayahs": 6236,
+    "complete_ayah_spines": 6236,
+    "incomplete_ayah_spines": 0,
+    "evidence_records": 37851,
+    "verified_evidence_records": 37851,
+    "crossrefs": 24394,
+    "verified_crossrefs": 24394
+  },
+  "canonical": {
+    "source": "Tanzil Quran Text",
+    "edition": "Tanzil Quran Uthmani",
+    "sha256": "b9027e22eb7e69d326f1eb7467fed8b7bc1eccbe1a894887ed2b3feb4ef5fc90",
+    "live_row_parity": "6236/6236",
+    "arabic_mismatch": 0
+  },
+  "translations": {
+    "source": "Quran Kemenag Web/API",
+    "edition": "Terjemah Al-Qur'an Kemenag Edisi Penyempurnaan 2019",
+    "sha256": "b67295903e3dcffa08d221a811847841729936487ff5a1bf82278cb7eab62436",
+    "live_api_parity": "6236/6236",
+    "translation_mismatch": 0,
+    "archive_binary_md5": "188c72ea69942730998650536e3b874c",
+    "archive_binary_parity": "PENDING"
+  },
+  "source_layers": {
+    "structural_metadata_sha256": "8867c1d88191472adec9db694b3cd9f135b1a2ef580574d32cf888dcb22c5c7a",
+    "qac_morphology_v04_sha256": "a1d12923815341face765083805d2148ed2d9f5cc3f7d6665219d887675d8c46",
+    "qurananalysis_qa_ontology_v1_sha256": "a049ae75adfe4a13690263df1dea7c7661c5ac3ccd07af6f4a908008507c2753"
+  },
+  "locks": [
+    "QURAN_FOUNDATION",
+    "QURAN_STRUCTURAL_METADATA",
+    "QURAN_SEMANTIC_OCCURRENCE_MAPPING",
+    "QURAN_QA_SEMANTIC_RELATION_GRAPH",
+    "QURAN_EVIDENCE_CROSSREFERENCE_V1"
+  ],
+  "non_closure": {
+    "qac_syntax": "PARTIAL",
+    "qac_semantic_ontology": "PARTIAL",
+    "claims": "EXCLUDED",
+    "interpretations": "EXCLUDED",
+    "contextual_synthesis": "EXCLUDED",
+    "evaluation": "EXCLUDED",
+    "scoring": "EXCLUDED"
+  }
+}
