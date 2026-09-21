@@ -8,22 +8,58 @@ A corpus-specific concept must not be added to the core engine. Corpus-specific 
 
 ## Run
 
-Set DATABASE_URL to the PostgreSQL connection string for the existing Q4Q database, then run cargo run from this directory.
+Set `DATABASE_URL` to the PostgreSQL connection string for the existing Q4Q database, then run `cargo run` from this directory.
 
-Loco listens on port 5150 by default.
+Loco listens on port `5150` by default.
 
 ## Generic API
 
-GET /api/v1/corpora
-GET /api/v1/corpora/{id}
-GET /api/v1/corpora/{corpus_id}/documents
-GET /api/v1/documents/{id}
-GET /api/v1/documents/{document_id}/units
-GET /api/v1/units/{id}
-GET /api/v1/units/{id}/representations
-GET /api/v1/units/{id}/navigation
-GET /api/v1/search?corpus=<code>&q=<term>
-GET /api/v1/resolve?corpus=<code>&reference=<reference>
-GET /api/v1/sources/{id}
+Base path: `/api/v1`
 
-The resolve endpoint treats reference as an opaque corpus-scoped value. The core never assumes a chapter:verse or another tradition-specific format.
+GET `/corpora`
+GET `/corpora/{id}`
+GET `/corpora/{corpus}/documents`
+GET `/documents/{id}`
+GET `/documents/{document_id}/units`
+GET `/units/{id}`
+GET `/units/{id}/representations`
+GET `/units/{id}/navigation`
+GET `/search?corpus=<code>&q=<term>&language=<tag>&content_role=<role>&limit=<n>&offset=<n>`
+GET `/resolve?corpus=<code>&reference=<reference>`
+GET `/sources/{id}`
+
+The API exposes stable DTO contracts rather than SeaORM model types.
+
+### Search contract
+
+- `q` is required and capped at 256 Unicode scalar values.
+- `limit` defaults to 20 and is clamped to 1..50.
+- `offset` defaults to 0 and is capped at 1,000,000.
+- Response fields: `items`, `limit`, `offset`, `count`, `has_more`.
+- Results are ordered deterministically for stable offset pagination on an unchanged dataset.
+- Search only returns verified text representations from active corpora.
+
+### Resolve contract
+
+The `reference` value is opaque and corpus-scoped. The core never assumes a chapter:verse, page:line, paragraph, or other tradition-specific syntax.
+
+### Error contract
+
+Validation and not-found responses use:
+
+```json
+{
+  "error": {
+    "code": "bad_request",
+    "message": "q is required"
+  }
+}
+```
+
+Current HTTP codes are `bad_request` and `not_found`. Unexpected runtime/database failures continue through framework error handling.
+
+See [API.md](./API.md) for the complete contract.
+
+## Genericity guard
+
+The CI pipeline rejects corpus-specific structural vocabulary inside `engine/src`. This is intentional: the universal kernel must remain reusable when additional corpora are added.
